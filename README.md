@@ -34,7 +34,6 @@ dxf/
 │   ├── JSFileItem.cs      # ファイルシステム操作
 │   ├── JSFileDialog.cs    # ファイル/フォルダ選択ダイアログ
 │   ├── JSApp.cs           # アプリケーション情報
-│   ├── Tetrahedron.cs     # 3Dジオメトリ計算
 │   ├── InputDialog.cs     # ユーザー入力ダイアログ
 │   └── Program.cs         # CLIエントリーポイント
 └── dxfUI/                 # GUIアプリケーション
@@ -51,12 +50,12 @@ dxf/
 
 ### コマンドライン（dxf.exe）
 
-```bash
+```
 dxf <スクリプトファイル.js>
 ```
 
 **例：**
-```bash
+```
 dxf examples/rectangle.js
 dxf myscript
 ```
@@ -473,7 +472,7 @@ JavaScript実行エンジンには以下の安全制限があります：
 
 ## 作者
 
-**bryful** (古橋 弘)  
+**bryful** (Hiroshi Furuhashi)  
 Twitter: [@bryful](https://twitter.com/bryful)  
 GitHub: [@bryful](https://github.com/bryful)  
 
