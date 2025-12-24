@@ -1,333 +1,490 @@
-﻿# dxf
+﻿# DXF ファイル ジェネレーター
 
+.NET 10を使用したJavaScriptベースのDXFファイル作成ツール
 
-## Overview
+## 概要
 
+**DXF ファイル ジェネレーター**は、JavaScriptを使用してAutoCAD DXFファイルを作成できるコマンドラインツールです。.NET 10で構築され、Jint JavaScriptエンジンを搭載しており、複雑な幾何学図面をプログラム的に生成するためのシンプルで強力なスクリプト環境を提供します。
 
-## Projects
+### 主な機能
 
-- **JApp**: Windows Forms GUI application for interactive JavaScript execution
-- **JCmd**: Command-line tool for executing JavaScript files
-- **fls**: File listing utility
+- 📝 **JavaScriptベースのスクリプト** - 使い慣れたJavaScript構文でDXF生成スクリプトを記述
+- 🎨 **豊富なジオメトリAPI** - 点、線、ポリゴン、楕円などを作成
+- 📐 **幾何学的操作** - 図形の回転、拡大縮小、ミラーリング、変換
+- ✂️ **ポリゴンクリッピング** - ポリゴンの高度なブール演算
+- 📁 **ファイルシステムアクセス** - エンコーディング対応のファイル読み書き
+- 🖥️ **ダイアログサポート** - インタラクティブなファイル選択とユーザー入力
+- 🧮 **数式評価** - 複雑な数式の評価
 
-## JavaScript API Reference
+## プロジェクト
 
-### Global Functions
+このリポジトリには2つの主要プロジェクトが含まれています：
 
-#### Output Functions
-```javascript
-write(object)           // Write text to output (without newline)
-writeln(object)        // Write text to output (with newline)
-cls()                  // Clear output screen
+- **dxf** - コアライブラリとコマンドラインツール（コンソールアプリケーション）
+- **dxfUI** - インタラクティブなJavaScript実行用Windows Formsアプリケーション
+
+## アーキテクチャ
+
+```
+dxf/
+├── dxf/                    # コアライブラリとCLIツール
+│   ├── DXF.cs             # DXFファイル生成
+│   ├── PointD.cs          # 演算子オーバーロード対応の倍精度2D点
+│   ├── Script.cs          # JavaScript実行エンジン
+│   ├── JSFileItem.cs      # ファイルシステム操作
+│   ├── JSFileDialog.cs    # ファイル/フォルダ選択ダイアログ
+│   ├── JSApp.cs           # アプリケーション情報
+│   ├── Tetrahedron.cs     # 3Dジオメトリ計算
+│   ├── InputDialog.cs     # ユーザー入力ダイアログ
+│   └── Program.cs         # CLIエントリーポイント
+└── dxfUI/                 # GUIアプリケーション
+    └── (Windows Forms UI)
 ```
 
-#### Dialog Functions
-```javascript
-alert(message, caption)                  // Show alert dialog
-answerDialog(message, caption)           // Show Yes/No dialog, returns bool
-inputBox(message, caption2, caption)     // Show input dialog, returns string or null
+## 動作環境
+
+- **.NET 10** 以降
+- **Visual Studio 2026** 以降（開発用）
+- **Windows 10/11**（Windows Forms UI用）
+
+## 使い方
+
+### コマンドライン（dxf.exe）
+
+```bash
+dxf <スクリプトファイル.js>
 ```
 
-#### Utility Functions
+**例：**
+```bash
+dxf examples/rectangle.js
+dxf myscript
+```
+
+拡張子が指定されていない場合、自動的に `.js` が追加されます。
+
+### スクリプトの既定フォルダ
+
+スクリプトは以下の場所から自動的に検索されます：
+1. `%AppData%\dxf\scripts\`
+2. `<実行ファイルディレクトリ>\scripts\`
+
+## JavaScript API リファレンス
+
+### グローバル関数
+
+#### 出力関数
 ```javascript
-calc(expression)       // Evaluate mathematical expression, returns number
-                      // Supports: sin, cos, tan, sqrt, abs, asin, acos, atan,
+write(text)           // コンソールにテキストを出力（改行なし）
+writeln(text)         // コンソールにテキストを出力（改行あり）
+cls()                 // コンソール画面をクリア
+```
+
+#### ダイアログ関数
+```javascript
+alert(message, caption)                  // アラートダイアログを表示
+answerDialog(message, caption)           // Yes/Noダイアログを表示、boolを返す
+inputBox(message, caption2, caption)     // 入力ダイアログを表示、文字列またはnullを返す
+```
+
+#### ユーティリティ関数
+```javascript
+calc(expression)      // 数式を評価、数値を返す
+                      // サポート: sin, cos, tan, sqrt, abs, asin, acos, atan,
                       //          log, log10, exp, floor, ceil, round, min, max, pow
-ls(path)              // List files in directory, returns string
+ls(path)              // ディレクトリ内のファイルリストを返す
 ```
 
-**Example:**
-```javascript
-writeln("Hello World!");
-var result = calc("sin(3.14159/2) + sqrt(16)");
-writeln("Result: " + result);
+### PointD クラス
 
-if (answerDialog("Continue?", "Question")) {
-    var name = inputBox("Enter your name:", "Input", "Name");
-    alert("Hello " + name, "Greeting");
-}
+演算子オーバーロード対応の倍精度2D点。
+
+```javascript
+var p1 = new PointD(10, 20);
+var p2 = new PointD(5, 15;
+
+// 算術演算
+var p3 = p1 + p2;           // 加算
+var p4 = p1 - p2;           // 減算
+var p5 = p1 * 2;            // スカラー乗算
+var p6 = p1 / 2;            // スカラー除算
+
+// ベクトル演算
+var len = p1.length();                  // 長さを取得
+var dist = p1.distanceTo(p2);          // 他の点までの距離
+var normalized = p1.normalize();        // 単位ベクトル
+var dotProduct = p1.dot(p2);           // 内積
+var crossProduct = p1.cross(p2);       // 外積（2D）
+var angle = p1.angleDegrees();         // 角度（度）
+var rotated = p1.rotate(45);           // 度数で回転
+var interpolated = p1.lerp(p2, 0.5);   // 線形補間
+
+// 変換
+var vec2 = p1.toVector2();             // DXF Vector2に変換
+var pointF = p1.toPointF();            // PointFに変換
 ```
 
-### App Object
+### DXF クラス
 
-Static properties and methods for application information.
+DXFファイルの作成と操作。
 
-#### Properties
 ```javascript
-App.exeFilePath                    // Full path to executable
-App.exeFileName                    // Executable filename
-App.exeFileDir                     // Executable directory
-App.exeFileNameWithoutExtension    // Executable name without extension
-App.prefFilePath                   // User preference directory path
-App.prefFileName                   // Preference file path
+var dxf = new DXF();
+
+// 描画メソッド
+dxf.drawLine(x0, y0, x1, y1);          // 2点間の線を描画
+dxf.drawLine(pointArray);              // ポリラインを描画
+dxf.drawPolygon(pointArray);           // 閉じたポリゴンを描画
+dxf.drawPolygon(polygonList);          // 複数のポリゴンを描画
+dxf.drawEllipse(center, radius);       // 円/楕円を描画
+dxf.drawSemiCircle(center, radius, startAngle, endAngle); // 円弧を描画
+
+// DXFファイルを保存
+dxf.save("output.dxf");
+
+// 静的ジオメトリユーティリティ
+var points = DXF.createRect(x, y, width, height);         // 矩形を作成
+var points = DXF.createRect(center, width, height);       // 中心点から矩形を作成
+var points = DXF.createTriangle(center, sides, radius);   // 正多角形を作成（三角形以上）
+
+// 幾何学的変換
+var rotated = DXF.rotAry(points, center, angleDegrees);   // 回転
+var scaled = DXF.scaleAry(points, center, scaleX, scaleY); // 拡大縮小（%指定）
+var moved = DXF.moveAry(points, dx, dy);                  // 移動
+var mirrored = DXF.mirrorAry(points, lineStart, lineEnd); // ミラーリング
+var mirroredPoint = DXF.mirrorPoint(point, lineStart, lineEnd); // 単一点のミラーリング
+
+// ポリゴンクリッピング
+var result = DXF.clipping(subjectPolygons, clipPolygons, operation);
+// operation: ClipOperation.Union, Intersection, Difference, Xor
+
+// 計算
+var angle = DXF.getAngleAtVertex(point0, point1, point2); // 3点の角度を計算
+var center = DXF.aryCenter(points);                        // 点配列の重心を計算
 ```
 
-#### Static Methods
+### App オブジェクト
+
+アプリケーション情報とシステム操作。
+
+#### プロパティ
 ```javascript
-App.callCmd(command)               // Execute cmd.exe command, returns output string
-App.callProcess(exePath, args)     // Execute process, returns output string
-App.commandLine()                  // Get command line arguments as array
-App.commandLineJson()              // Get command line arguments as JSON string
-App.getEnv(variableName)           // Get environment variable, returns string or null
+App.exeFilePath                    // 実行ファイルのフルパス
+App.exeFileName                    // 実行ファイル名
+App.exeFileDir                     // 実行ファイルディレクトリ
+App.exeFileNameWithoutExtension    // 拡張子なしの実行ファイル名
+App.prefFilePath                   // ユーザー設定ディレクトリパス
+App.prefFileName                   // 設定ファイルパス
 ```
 
-**Example:**
+#### 静的メソッド
 ```javascript
-writeln("Running from: " + App.exeFileDir);
-var output = App.callCmd("dir");
+// コマンド実行
+App.callCmdGetStd(command)         // cmd.exeコマンドを実行、標準出力を返す
+App.openProcess(exePath, args)     // プロセスを起動、boolを返す
+App.callProcess(exePath, args)     // プロセスを実行して待機、終了コードを返す
+App.callProcessGetStd(exePath, args) // プロセスを実行、標準出力を返す
+
+// 情報取得
+App.commandLine()                  // コマンドライン引数を配列で取得
+App.commandLineJson()              // コマンドライン引数をJSON文字列で取得
+App.getEnv(variableName)           // 環境変数を取得
+```
+
+**使用例:**
+```javascript
+// コマンド実行
+var output = App.callCmdGetStd("dir");
 writeln(output);
 
+// プロセス起動
+if (App.openProcess("notepad.exe", "test.txt")) {
+    writeln("メモ帳を起動しました");
+}
+
+// 環境変数取得
+var username = App.getEnv("USERNAME");
+writeln("ユーザー名: " + username);
+
+// コマンドライン引数
 var args = App.commandLine();
-writeln("Arguments: " + args.join(", "));
+for (var i = 0; i < args.length; i++) {
+    writeln("引数 " + i + ": " + args[i]);
+}
 ```
 
-### FileItem Object
+### FileItem オブジェクト
 
-File and directory manipulation object.
+ファイルとディレクトリの操作。
 
-#### Constructor
+#### コンストラクタ
 ```javascript
-var file = new FileItem(path);     // Create FileItem from path
+var file = new FileItem(path);
 ```
 
-#### Instance Properties
+#### インスタンスプロパティ
 ```javascript
-file.fullName          // Full path (read/write)
-file.name              // Filename
-file.ext               // Extension
-file.directory         // Directory path
-file.parent            // Parent directory as FileItem
-file.length            // File size in bytes
-file.created           // Creation DateTime
-file.modified          // Last modified DateTime
-file.exists            // Check if exists
-file.isDirectory       // Check if directory
-file.hidden            // Hidden attribute (read/write)
+file.fullName          // フルパス（読み書き可能）
+file.name              // ファイル名
+file.ext               // 拡張子
+file.directory         // ディレクトリパス
+file.parent            // 親ディレクトリ（FileItem）
+file.length            // ファイルサイズ（バイト）
+file.created           // 作成日時
+file.modified          // 更新日時
+file.exists            // 存在確認
+file.isDirectory       // ディレクトリか確認
+file.hidden            // 隠しファイル属性（読み書き可能）
 ```
 
-#### Instance Methods
+#### インスタンスメソッド
 ```javascript
-file.setFullName(path)             // Set file path, returns bool
-file.remove()                      // Delete file/folder, returns bool
-file.rename(newName)               // Rename file/folder, returns bool
-file.copy(destPath)                // Copy file, returns bool
-file.move(destPath)                // Move file/folder, returns bool
-file.getFiles()                    // Get files array in directory
-file.getDirectories()              // Get subdirectories array
-file.create()                      // Create directory
-file.execute()                     // Execute file or open folder
-file.resolve()                     // Resolve shortcut, returns FileItem
-file.resolvePath()                 // Get shortcut target path
+file.setFullName(path)             // ファイルパスを設定、boolを返す
+file.remove()                      // ファイル/フォルダを削除、boolを返す
+file.rename(newName)               // ファイル/フォルダ名を変更、boolを返す
+file.copy(destPath)                // ファイルをコピー、boolを返す
+file.move(destPath)                // ファイル/フォルダを移動、boolを返す
+file.getFiles()                    // ディレクトリ内のファイル配列を取得
+file.getDirectories()              // サブディレクトリ配列を取得
+file.create()                      // ディレクトリを作成
+file.execute()                     // ファイルを実行またはフォルダを開く
+file.resolve()                     // ショートカットを解決、FileItemを返す
+file.resolvePath()                 // ショートカットのターゲットパスを取得
 ```
 
-#### Static Methods
+#### 静的メソッド
 ```javascript
-FileItem.encode(string)            // URL encode string
-FileItem.decode(string)            // URL decode string
-FileItem.readAllText(path, encoding)   // Read text file (encoding: "utf-8", "utf-16", "shift_jis")
-FileItem.writeAllText(path, content, encoding) // Write text file
-FileItem.getFilesFromDir(path)     // Get files array from directory
-FileItem.getDirectoriesFromDir(path) // Get directories array
-FileItem.createFolder(path)        // Create folder
-FileItem.ls(path)                  // List files in directory
+FileItem.encode(string)                        // URL文字列をエンコード
+FileItem.decode(string)                        // URL文字列をデコード
+FileItem.readAllText(path, encoding)           // テキストファイルを読み込み
+FileItem.writeAllText(path, content, encoding) // テキストファイルに書き込み
+FileItem.getFilesFromDir(path)                 // ディレクトリからファイル配列を取得
+FileItem.getDirectoriesFromDir(path)           // ディレクトリ配列を取得
+FileItem.createFolder(path)                    // フォルダを作成
+FileItem.ls(path)                              // ディレクトリ内のファイルをリスト
 ```
 
-#### Static Properties (Special Folders)
+**エンコーディングサポート:** `"utf-8"`, `"utf-16"`, `"shift_jis"`
+
+#### 静的プロパティ（特殊フォルダ）
 ```javascript
-FileItem.currentPath               // Current working directory
+FileItem.currentPath               // カレントディレクトリ
 FileItem.appDataPath               // %AppData%
 FileItem.localAppDataPath          // %LocalAppData%
-FileItem.myDocumentsPath           // My Documents
-FileItem.desktopPath               // Desktop
-FileItem.tempPath                  // Temp folder
-FileItem.userProfilePath           // User profile
+FileItem.myDocumentsPath           // マイドキュメント
+FileItem.desktopPath               // デスクトップ
+FileItem.tempPath                  // 一時フォルダ
+FileItem.userProfilePath           // ユーザープロファイル
 FileItem.programFilesPath          // Program Files
-FileItem.systemPath                // System folder
-FileItem.commonAppDataPath         // Common AppData
-FileItem.startupPath               // Startup folder
+FileItem.systemPath                // システムフォルダ
+FileItem.commonAppDataPath         // 共通AppData
+FileItem.startupPath               // スタートアップフォルダ
 ```
 
-**Example:**
-```javascript
-var file = new FileItem("C:\\test.txt");
-if (file.exists) {
-    var content = FileItem.readAllText(file.fullName, "utf-8");
-    writeln(content);
-}
+### FileDialog オブジェクト
 
-var desktop = new FileItem(FileItem.desktopPath);
-var files = desktop.getFiles();
-for (var i = 0; i < files.length; i++) {
-    writeln(files[i].name + " - " + files[i].length + " bytes");
-}
+モダンなファイル/フォルダ選択ダイアログ。
+
+#### コンストラクタ
+```javascript
+var dlg = new FileDialog();
 ```
 
-### FileDialog Object
-
-Modern file and folder selection dialogs.
-
-#### Constructor
+#### プロパティ
 ```javascript
-var dlg = new FileDialog("foo.txt");
+dlg.fileName           // 選択されたファイル名（読み書き可能）
+dlg.initialDirectory   // 初期ディレクトリ
+dlg.title              // ダイアログタイトル
+dlg.filter             // ファイルフィルタ（例: "Text(*.txt)|*.txt|All(*.*)|*.*"）
+dlg.filterIndex        // フィルタインデックス（1から始まる）
+dlg.defaultExt         // 既定の拡張子
+dlg.multiSelect        // 複数選択を有効化
 ```
 
-#### Properties
+#### メソッド
 ```javascript
-dlg.fileName           // Selected filename (read/write)
-dlg.initialDirectory   // Initial directory
-dlg.title              // Dialog title
-dlg.filter             // File filter (e.g., "Text(*.txt)|*.txt|All(*.*)|*.*")
-dlg.filterIndex        // Filter index (1-based)
-dlg.defaultExt         // Default extension
-dlg.multiSelect        // Enable multiple selection
-```
-
-#### Methods
-```javascript
-dlg.openDialog()                   // Show open file dialog
+dlg.openDialog()                   // ファイルを開くダイアログを表示
 dlg.openDialog(filename)
 dlg.openDialog(filename, title)
 
-dlg.saveDialog()                   // Show save file dialog
+dlg.saveDialog()                   // ファイル保存ダイアログを表示
 dlg.saveDialog(filename)
 dlg.saveDialog(filename, title)
 
-dlg.folderDialog()                 // Show folder picker dialog (modern UI)
+dlg.folderDialog()                 // フォルダ選択ダイアログを表示（モダンUI）
 dlg.folderDialog(title)
 dlg.folderDialog(initialDir, title)
 ```
 
-**Example:**
+## サンプルスクリプト
+
+### 基本的な矩形
+
+```javascript
+var dxf = new DXF();
+
+// 矩形を作成
+var rect = DXF.createRect(0, 0, 100, 50);
+dxf.drawPolygon(rect);
+
+// DXFファイルを保存
+dxf.save("rectangle.dxf");
+writeln("DXFファイルを作成しました: rectangle.dxf");
+```
+
+### 回転したポリゴン
+
+```javascript
+var dxf = new DXF();
+
+// 六角形を作成
+var center = new PointD(0, 0);
+var hex = DXF.createTriangle(center, 6, 50);
+
+// オリジナルと回転バージョンを描画
+for (var i = 0; i < 12; i++) {
+    var angle = i * 30;
+    var rotated = DXF.rotAry(hex, center, angle);
+    dxf.drawPolygon(rotated);
+}
+
+dxf.save("rotated_hexagons.dxf");
+writeln("12個の回転した六角形を作成しました");
+```
+
+### インタラクティブなファイル選択
+
 ```javascript
 var dlg = new FileDialog();
-dlg.filter = "JavaScript(*.js)|*.js|Text(*.txt)|*.txt|All(*.*)|*.*";
-dlg.title = "Select Script File";
+dlg.filter = "DXFファイル(*.dxf)|*.dxf|すべてのファイル(*.*)|*.*";
+dlg.title = "DXFファイルを保存";
 
-var filename = dlg.openDialog();
+var filename = dlg.saveDialog("output.dxf");
 if (filename) {
-    writeln("Selected: " + filename);
-    var content = FileItem.readAllText(filename, "utf-8");
-    writeln(content);
+    var dxf = new DXF();
+    
+    // ジオメトリを作成
+    var circle = DXF.createTriangle(new PointD(0, 0), 32, 100);
+    dxf.drawPolygon(circle);
+    
+    // 保存
+    if (dxf.save(filename)) {
+        writeln("ファイルを保存しました: " + filename);
+    } else {
+        writeln("ファイルの保存に失敗しました");
+    }
 }
-
-// Folder selection
-var folder = dlg.folderDialog("Select Output Folder");
-if (folder) {
-    writeln("Selected folder: " + folder);
-}
 ```
 
-## Usage
+### 数学的パターン
 
-### JApp (GUI)
-1. Launch JApp.exe
-2. Enter JavaScript code in the editor
-3. Click Execute button to run the code
-4. View output in the output panel
-
-### JCmd (Command Line)
-```bash
-JCmd <scriptfile> [arg1] [arg2] ...
-```
-
-**Example:**
-```bash
-JCmd test.js
-JCmd myscript arg1 arg2
-```
-
-If no extension is provided, `.js` is automatically appended.
-
-## Script Default Folders
-
-Scripts are automatically searched in:
-1. `%AppData%\<AppName>\scripts\`
-2. `<ExecutableDir>\<AppName>_scripts\`
-
-## Library Dependencies
-
-- [Jint](https://github.com/sebastienros/jint) - JavaScript interpreter for .NET
-- [NCalc](https://ncalc.github.io/ncalc/articles/index.html) - Mathematical expression evaluator
-- [WindowsAPICodePack-Shell](https://github.com/aybe/Windows-API-Code-Pack-1.1) - Modern Windows dialogs
-
-## Requirements
-
-- .NET 10
-- Visual Studio 2022 or later
-- Windows 10/11
-
-## License
-
-This software is released under the MIT License, see LICENSE
-
-
-## Example Scripts
-
-### Hello World
 ```javascript
-writeln("Hello World!");
-var name = inputBox("What's your name?", "Input", "Name");
-if (name) {
-    alert("Hello, " + name + "!", "Greeting");
+var dxf = new DXF();
+
+// 螺旋パターンを作成
+var center = new PointD(0, 0);
+var steps = 100;
+var maxRadius = 200;
+var prevPoint;
+
+for (var i = 0; i < steps; i++) {
+    var angle = i * calc("360 / " + steps);
+    var radius = (i / steps) * maxRadius;
+    
+    var point = new PointD(
+        calc("cos(" + angle + " * 3.14159 / 180) * " + radius),
+        calc("sin(" + angle + " * 3.14159 / 180) * " + radius)
+    );
+    
+    if (i > 0) {
+        dxf.drawLine([prevPoint, point]);
+    }
+    prevPoint = point;
 }
+
+dxf.save("spiral.dxf");
+writeln("螺旋パターンを作成しました");
 ```
 
-### File Processing
+### ファイル処理
+
 ```javascript
 var dlg = new FileDialog();
-dlg.filter = "Text Files(*.txt)|*.txt";
-var filename = dlg.openDialog("Select a text file");
+dlg.filter = "テキストファイル(*.txt)|*.txt|すべてのファイル(*.*)|*.*";
+var filename = dlg.openDialog();
 
 if (filename) {
     var content = FileItem.readAllText(filename, "utf-8");
     var lines = content.split("\n");
-    writeln("File has " + lines.length + " lines");
     
-    // Process each line
-    for (var i = 0; i < lines.length; i++) {
+    writeln("ファイル: " + filename);
+    writeln("行数: " + lines.length);
+    writeln("─".repeat(50));
+    
+    for (var i = 0; i < Math.min(10, lines.length); i++) {
         writeln((i + 1) + ": " + lines[i]);
     }
 }
 ```
 
-### Mathematical Calculations
+### ポリゴンクリッピング
+
 ```javascript
-writeln("Trigonometry Example:");
-var angle = 45;
-var radians = angle * Math.PI / 180;
+var dxf = new DXF();
 
-var result1 = calc("sin(" + radians + ")");
-var result2 = calc("cos(" + radians + ")");
-var result3 = calc("sqrt(2) / 2");
+// 2つの矩形を作成
+var rect1 = DXF.createRect(0, 0, 100, 100);
+var rect2 = DXF.createRect(50, 50, 100, 100);
 
-writeln("sin(45) = " + result1);
-writeln("cos(45) = " + result2);
-writeln("√2/2 = " + result3);
+// 配列に変換
+var subjects = [rect1];
+var clips = [rect2];
+
+// クリッピング操作
+var union = DXF.clipping(subjects, clips, ClipOperation.Union);
+var intersection = DXF.clipping(subjects, clips, ClipOperation.Intersection);
+var difference = DXF.clipping(subjects, clips, ClipOperation.Difference);
+
+// 結果を描画
+dxf.drawPolygon(union);
+dxf.save("clipping_result.dxf");
+writeln("クリッピング結果を作成しました");
 ```
 
-### Directory Listing
-```javascript
-var dlg = new FileDialog();
-var folder = dlg.folderDialog("Select a folder to list");
+## ライブラリ依存関係
 
-if (folder) {
-    var dir = new FileItem(folder);
-    var files = dir.getFiles();
-    
-    writeln("Files in " + folder + ":");
-    writeln("─".repeat(50));
-    
-    for (var i = 0; i < files.length; i++) {
-        var size = (files[i].length / 1024).toFixed(2);
-        writeln(files[i].name + " (" + size + " KB)");
-    }
-    
-    writeln("─".repeat(50));
-    writeln("Total: " + files.length + " files");
-}
+- **[Jint](https://github.com/sebastienros/jint) 4.4.2** - .NET用JavaScriptインタープリタ
+- **[NCalcSync](https://ncalc.github.io/ncalc/) 5.11.0** - 数式評価ライブラリ
+- **[netDxf](https://github.com/haplokuon/netDxf) 2023.11.10** - DXFファイルフォーマットライブラリ
+- **[Clipper2](https://github.com/AngusJohnson/Clipper2) 2.0.0** - ポリゴンクリッピングとオフセット
+- **[WindowsAPICodePack-Shell](https://github.com/aybe/Windows-API-Code-Pack-1.1) 1.1.1** - モダンなWindowsダイアログ
 
-## Authors
+## セキュリティに関する考慮事項
 
-**bry-ful** (Hiroshi Furuhashi)  
-Twitter: [@bryful](https://twitter.com/bryful)
+JavaScript実行エンジンには以下の安全制限があります：
+
+- **再帰制限:** 100レベル
+- **ステートメント制限:** 10,000ステートメント
+- **CLRアクセス:** 特定のアセンブリに制限
+
+これらの制限により、無限ループや過度なリソース消費を防ぎます。
+
+## ライセンス
+
+本ソフトウェアはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
+
+## 作者
+
+**bryful** (古橋 弘)  
+Twitter: [@bryful](https://twitter.com/bryful)  
+GitHub: [@bryful](https://github.com/bryful)  
+
+## 謝辞
+
+- すべてのオープンソースライブラリ貢献者に感謝します
+- Adobe ExtendScriptの自動化ワークフローにインスパイアされました
+
+---
+
+**注意:** 本プロジェクトは活発に開発中です。将来のバージョンでAPIが変更される可能性があります。
 
