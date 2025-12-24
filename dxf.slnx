@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="dxf/dxf.csproj" />
-  <Project Path="smple_graph/sample_graph.csproj" Id="d9c7baac-dbdb-4c3e-b4ef-5f40ef55d5c5" />
+  <Project Path="dxfUI/dxfUI.csproj" />
 </Solution>

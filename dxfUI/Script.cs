@@ -8,7 +8,7 @@ namespace dxf
 {
 	public class Script
 	{
-		private string[] m_ScriptDefaultFolder = new string[] { "" };
+		private string[] m_ScriptDefaultFolder = new string[] {""};
 		public string[] scriptDefaultFolder
 		{
 			get { return m_ScriptDefaultFolder; }
@@ -35,12 +35,16 @@ namespace dxf
 		{
 			get { return m_Error; }
 		}
-		Engine? engine = null;
+		Engine engine = new Engine(cfg => cfg
+			.LimitRecursion(100)
+			.MaxStatements(10_000)
+			.AllowClr(typeof(JSFileItem).Assembly)
+		);
 		private void ScanScriptDefaultFolder()
 		{
 			List<string> ll = new List<string>();
 			string s = "";
-			s = Path.Combine(JSApp.prefFilePath, "scripts");
+			s = Path.Combine (JSApp.prefFilePath, "scripts");
 			if (!Directory.Exists(s))
 			{
 				Directory.CreateDirectory(s);
@@ -74,13 +78,14 @@ namespace dxf
 			engine.SetValue("answerDialog", new Func<string, string, bool>(AnswerDialog));
 			engine.SetValue("inputBox", new Func<string, string, string, string?>(InputDialog));
 			engine.SetValue("calc", new Func<string, double>(Calculate));
-			engine.SetValue("ls", new Func<string, string>(JSFileItem.ls));
+			engine.SetValue("ls", new Func<string,string>(JSFileItem.ls));
 			engine.Execute(@"
 				var FileItem = importNamespace('dxf').JSFileItem;
 				var FileDialog = importNamespace('dxf').JSFileDialog;
 				var App = importNamespace('dxf').JSApp;
-				var pointD = importNamespace('dxf').PointD;
-				
+				var Dxf = importNamespace('dxf').DXF;
+				var PointD = importNamespace('dxf').PointD;
+
 			");
 
 		}
@@ -127,15 +132,15 @@ namespace dxf
 			return ret;
 		}
 
-		public bool ExecuteFile(string filename)
+		public bool ExecteFile(string filename)
 		{
 			bool ret = false;
 			string filename2 = filename;
-			if (Path.GetExtension(filename2) == "")
+			if(Path.GetExtension(filename2) == "")
 			{
 				filename2 += ".js";
 			}
-			string s = Path.GetDirectoryName(filename2) ?? string.Empty;
+			string s = Path.GetDirectoryName(filename2)?? string.Empty;
 			if (string.IsNullOrEmpty(s))
 			{
 				filename2 = Path.Combine(Directory.GetCurrentDirectory(), filename2);
@@ -262,7 +267,7 @@ namespace dxf
 			}
 			return ret;
 		}
-		public string? InputDialog(string msg, string cap2, string cap)
+		public string? InputDialog(string msg, string cap2,string cap)
 		{
 			string? ret = null;
 			try
@@ -295,7 +300,7 @@ namespace dxf
 			}
 			return ret;
 		}
-
+		
 		public double Calculate(string expression)
 		{
 			try
@@ -307,9 +312,9 @@ namespace dxf
 					m => char.ToUpper(m.Value[0]) + m.Value.Substring(1),
 					System.Text.RegularExpressions.RegexOptions.IgnoreCase
 				);
-
+				
 				var e = new NCalc.Expression(expression);
-
+				
 				// カスタム関数のサポート（必要に応じて）
 				e.EvaluateFunction += (name, args) =>
 				{
@@ -366,7 +371,7 @@ namespace dxf
 							break;
 					}
 				};
-
+				
 				return Convert.ToDouble(e.Evaluate());
 			}
 			catch (Exception ex)

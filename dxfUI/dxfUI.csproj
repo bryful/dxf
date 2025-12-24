@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    
+    <!-- Windows Forms の警告を抑制 -->
+    <NoWarn>$(NoWarn);WFO0001</NoWarn>
+    <UserSecretsId>2d6754b3-3724-4e67-9764-e7bb8600dffd</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\dxf\DXF.cs" Link="DXF.cs" />
+    <Compile Include="..\dxf\PointD.cs" Link="PointD.cs" />
+    <Compile Include="..\dxf\PolygonClipper.cs" Link="PolygonClipper.cs" />
+    <Compile Include="..\dxf\Tetrahedron.cs" Link="Tetrahedron.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Clipper2" Version="2.0.0" />
+    <PackageReference Include="Jint" Version="4.4.2" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="NCalcSync" Version="5.11.0" />
+    <PackageReference Include="netDxf" Version="2023.11.10" />
+  </ItemGroup>
+</Project>
