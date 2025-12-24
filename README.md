@@ -101,7 +101,7 @@ ls(path)              // ディレクトリ内のファイルリストを返す
 
 ```javascript
 var p1 = new PointD(10, 20);
-var p2 = new PointD(5, 15;
+var p2 = new PointD(5, 15);
 
 // 算術演算
 var p3 = p1 + p2;           // 加算
@@ -110,18 +110,16 @@ var p5 = p1 * 2;            // スカラー乗算
 var p6 = p1 / 2;            // スカラー除算
 
 // ベクトル演算
-var len = p1.length();                  // 長さを取得
 var dist = p1.distanceTo(p2);          // 他の点までの距離
-var normalized = p1.normalize();        // 単位ベクトル
-var dotProduct = p1.dot(p2);           // 内積
-var crossProduct = p1.cross(p2);       // 外積（2D）
-var angle = p1.angleDegrees();         // 角度（度）
-var rotated = p1.rotate(45);           // 度数で回転
-var interpolated = p1.lerp(p2, 0.5);   // 線形補間
+
+// 比較
+var isEqual = p1.equals(p2);           // 許容誤差を持った等価比較
+var isEqual2 = p1.equals(p2, 0.001);   // カスタム許容誤差で比較
 
 // 変換
-var vec2 = p1.toVector2();             // DXF Vector2に変換
+var vec2 = p1.toVector2();             // DXF Vector2に変換（Y軸反転）
 var pointF = p1.toPointF();            // PointFに変換
+var str = p1.toString();               // 文字列表現を取得 "(x, y)"
 ```
 
 ### DXF クラス

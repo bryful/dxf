@@ -36,7 +36,6 @@ namespace dxf
         {
             return new PointD(p.X * scalar, p.Y * scalar);
         }
-		private const double EPSILON = 1e-10;
 
 		// 除算演算子のオーバーロード
 		public static PointD operator /(PointD p, double scalar)
@@ -76,6 +75,7 @@ namespace dxf
             }
             return false;
         }
+		private const double EPSILON = 1e-10;
 		public bool equals(PointD other, double epsilon = EPSILON)
 		{
 			return Math.Abs(X - other.X) < epsilon &&
