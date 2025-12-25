@@ -155,7 +155,7 @@ namespace dxf
 			MainMenuStrip = menuStrip1;
 			Name = "Form1";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "JApp";
+			Text = "DxfUI";
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			ResumeLayout(false);

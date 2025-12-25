@@ -315,37 +315,7 @@ namespace dxf
 			}
 			return pa;
 		}
-		/*
-		 * ({
-closed:true,
-vertices:[
-
-[-30, 0],
-[-40, 0],
-[-40, -40],
-[0, -40],
-[0, -30],
-[-30, -30]
-],
-inTangents:[
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0]
-],
-outTangents:[
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0],
-[0, 0]
-]
-})
-
-		 */ 
+		
 		static public string arrayToJson(PointD[] ary)
 		{
 			string ret = "";
