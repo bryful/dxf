@@ -26,6 +26,10 @@
 		<NoWarn>$(NoWarn);WFO0001</NoWarn>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Tetrahedron.cs" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<COMReference Include="IWshRuntimeLibrary">
 			<WrapperTool>tlbimp</WrapperTool>
@@ -36,6 +40,10 @@
 			<Isolated>false</Isolated>
 			<EmbedInteropTypes>true</EmbedInteropTypes>
 		</COMReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Tetrahedron.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

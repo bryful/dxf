@@ -35,7 +35,11 @@ namespace dxf
 		{
 			get { return m_Error; }
 		}
-		Engine? engine = null;
+		Engine engine = new Engine(cfg => cfg
+			.LimitRecursion(100)
+			.MaxStatements(10_000)
+			.AllowClr(typeof(JSFileItem).Assembly)
+		);
 		private void ScanScriptDefaultFolder()
 		{
 			List<string> ll = new List<string>();
@@ -69,6 +73,8 @@ namespace dxf
 			engine.SetValue("write", Write);
 			engine.SetValue("writeln", Writeln);
 			engine.SetValue("cls", Cls);
+			engine.SetValue("copyText", CopyToClipboard);
+			engine.SetValue("pasteText", PasteFromClipboard);
 			engine.SetValue("scriptDefaultFolder", scriptDefaultFolder);
 			engine.SetValue("alert", new Action<string, string>(Alert));
 			engine.SetValue("answerDialog", new Func<string, string, bool>(AnswerDialog));
@@ -79,8 +85,9 @@ namespace dxf
 				var FileItem = importNamespace('dxf').JSFileItem;
 				var FileDialog = importNamespace('dxf').JSFileDialog;
 				var App = importNamespace('dxf').JSApp;
-				var pointD = importNamespace('dxf').PointD;
-				
+				var Dxf = importNamespace('dxf').DXF;
+				var PointD = importNamespace('dxf').PointD;
+
 			");
 
 		}
@@ -127,7 +134,7 @@ namespace dxf
 			return ret;
 		}
 
-		public bool ExecuteFile(string filename)
+		public bool ExecteFile(string filename)
 		{
 			bool ret = false;
 			string filename2 = filename;
@@ -169,12 +176,20 @@ namespace dxf
 		// JavaScriptから値を取得
 		public object? GetValue(string variableName)
 		{
-			return engine.GetValue(variableName).ToObject();
+			if (engine != null)
+			{
+				return engine.GetValue(variableName).ToObject();
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		// C#のオブジェクトをJavaScriptに公開
 		public void SetObject(string name, object obj)
 		{
+			if (engine == null) return;
 			engine.SetValue(name, obj);
 		}
 
@@ -374,6 +389,33 @@ namespace dxf
 				m_Error = $"Calc Error: {ex.Message}";
 				return 0;
 			}
+		}
+		public void CopyToClipboard(string text)
+		{
+			try
+			{
+				Clipboard.SetText(text);
+			}
+			catch (Exception ex)
+			{
+				m_Error = $"Clipboard Error: {ex.Message}";
+			}
+		}
+		public string PasteFromClipboard()
+		{
+			string ret = "";
+			try
+			{
+				if (Clipboard.ContainsText())
+				{
+					ret = Clipboard.GetText();
+				}
+			}
+			catch (Exception ex)
+			{
+				m_Error = $"Clipboard Error: {ex.Message}";
+			}
+			return ret;
 		}
 	}
 }

@@ -15,6 +15,7 @@
     <Compile Include="..\dxf\DXF.cs" Link="DXF.cs" />
     <Compile Include="..\dxf\PointD.cs" Link="PointD.cs" />
     <Compile Include="..\dxf\PolygonClipper.cs" Link="PolygonClipper.cs" />
+    <Compile Include="..\dxf\Script.cs" Link="Script.cs" />
     <Compile Include="..\dxf\Tetrahedron.cs" Link="Tetrahedron.cs" />
   </ItemGroup>
 

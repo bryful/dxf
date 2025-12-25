@@ -7,6 +7,7 @@ using netDxf;
 using netDxf.Entities;
 using System.IO;
 using System.Windows;
+using System.Text.Json.Nodes;
 namespace dxf
 {
 	public class DXF
@@ -314,6 +315,68 @@ namespace dxf
 			}
 			return pa;
 		}
+		/*
+		 * ({
+closed:true,
+vertices:[
 
+[-30, 0],
+[-40, 0],
+[-40, -40],
+[0, -40],
+[0, -30],
+[-30, -30]
+],
+inTangents:[
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0]
+],
+outTangents:[
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0],
+[0, 0]
+]
+})
+
+		 */ 
+		static public string arrayToJson(PointD[] ary)
+		{
+			string ret = "";
+			JsonObject jo = new JsonObject();
+			jo["closed"] = true;
+			JsonArray vertices = new JsonArray();
+			JsonArray inTangents = new JsonArray();
+			JsonArray outTangents = new JsonArray();
+			if (ary.Length>0)
+			{
+				for (int i = 0; i < ary.Length; i++)
+				{
+					JsonArray pnt = new JsonArray();
+					pnt.Add(ary[i].X);
+					pnt.Add(ary[i].Y);
+					vertices.Add(pnt);
+					JsonArray pnt0 = new JsonArray();
+					pnt0.Add(0);
+					pnt0.Add(0);
+					inTangents.Add(pnt0);
+					JsonArray pnt1 = new JsonArray();
+					pnt1.Add(0);
+					pnt1.Add(0);
+					outTangents.Add(pnt1);
+				}
+			}
+			jo["vertices"] = vertices;
+			jo["inTangents"] = inTangents;
+			jo["outTangents"] = outTangents;
+
+			return jo.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+		}
 	}
 }
