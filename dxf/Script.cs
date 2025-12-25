@@ -134,7 +134,7 @@ namespace dxf
 			return ret;
 		}
 
-		public bool ExecteFile(string filename)
+		public bool ExecuteFile(string filename)
 		{
 			bool ret = false;
 			string filename2 = filename;
