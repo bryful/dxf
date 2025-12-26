@@ -348,5 +348,38 @@ namespace dxf
 
 			return jo.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
 		}
+		static public string arrayToAE(PointD[] ary)
+		{
+			string ret = "({\r\n";
+			ret += "closed : true,\r\n";
+
+			string vertices = "";
+			string inTangents = "";
+			string outTangents ="";
+			if (ary.Length > 0)
+			{
+				for (int i = 0; i < ary.Length; i++)
+				{
+					vertices += "[" + ary[i].X + "," + ary[i].Y + "]";
+					inTangents += "[0,0]";
+					outTangents += "[0,0]";
+					if (i < ary.Length - 1)
+					{
+						vertices += ",\r\n";
+						inTangents += ",\r\n";
+						outTangents += ",\r\n";
+					}
+				}
+			}
+			ret += "vertices : [\r\n";
+			ret += vertices + "\r\n],\r\n";
+			ret += "inTangents : [\r\n";
+			ret += inTangents + "\r\n],\r\n";
+			ret += "outTangents : [\r\n";
+			ret += outTangents + "\r\n]\r\n";
+			ret += "\r\n})\r\n";
+
+			return ret; 
+		}
 	}
 }
