@@ -377,7 +377,7 @@ namespace dxf
 			ret += inTangents + "\r\n],\r\n";
 			ret += "outTangents : [\r\n";
 			ret += outTangents + "\r\n]\r\n";
-			ret += "\r\n})\r\n";
+			ret += "})\r\n";
 
 			return ret; 
 		}
