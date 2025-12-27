@@ -75,6 +75,8 @@ namespace dxf
 			engine.SetValue("cls", Cls);
 			engine.SetValue("copyText", CopyToClipboard);
 			engine.SetValue("pasteText", PasteFromClipboard);
+			engine.SetValue("numToHex", numToHex);
+			engine.SetValue("numToBin", numToBin);
 			engine.SetValue("scriptDefaultFolder", scriptDefaultFolder);
 			engine.SetValue("alert", new Action<string, string>(Alert));
 			engine.SetValue("answerDialog", new Func<string, string, bool>(AnswerDialog));
@@ -414,6 +416,34 @@ namespace dxf
 			catch (Exception ex)
 			{
 				m_Error = $"Clipboard Error: {ex.Message}";
+			}
+			return ret;
+		}
+		public string numToHex(int num,int? keta = 8)
+		{
+			if (keta==null)
+			{
+				keta = 8;
+			}
+			string ret = num.ToString("X");
+			int let = (int)keta - ret.Length;
+			if (let > 0)
+			{
+				ret = ret.PadLeft((int)keta, '0');
+			}
+			return ret;
+		}
+		public string numToBin(int num, int? keta = 16)
+		{
+			if (keta == null)
+			{
+				keta = 8;
+			}
+			string ret = Convert.ToString(num, 2);
+			int let = (int)keta - ret.Length;
+			if (let > 0)
+			{
+				ret = ret.PadLeft((int)keta, '0');
 			}
 			return ret;
 		}

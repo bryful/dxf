@@ -65,6 +65,16 @@ namespace dxf
 				m_dxf.Entities.Add(t1);
 			}
 		}
+		public void drawLines(PointD[][] pa)
+		{
+			if (pa.Length > 1)
+			{
+				for (int i = 0; i < pa.Length; i++)
+				{
+					drawLine(pa[i]);
+				}
+			}
+		}
 		public void drawPolygon(PointD[] pnts)
 		{
 			if (pnts.Length > 1)
@@ -74,11 +84,11 @@ namespace dxf
 				m_dxf.Entities.Add(t1);
 			}
 		}
-		public void drawPolygon(List<PointD[]> pa)
+		public void drawPolygon(PointD[][] pa)
 		{
-			if (pa.Count > 1)
+			if (pa.Length > 1)
 			{
-				for (int i = 0; i < pa.Count; i++)
+				for (int i = 0; i < pa.Length; i++)
 				{
 					drawPolygon(pa[i]);
 				}
@@ -86,17 +96,24 @@ namespace dxf
 			
 		}
 		
-		public void drawEllipse(PointD cp, float radius)
+		public void drawEllipse(PointD cp)
 		{
-			if (radius > 0)
+			if (cp.R > 0)
 			{
-				Ellipse ellipse = new Ellipse(cp.toVector2(), radius*2, radius*2);
+				Ellipse ellipse = new Ellipse(cp.toVector2(), cp.R*2, cp.R*2);
 				m_dxf.Entities.Add(ellipse);
 			}
 		}
-		public void drawSemiCircle(PointD cp,float radius,float startAngle, float endAngle)
+		public void drawEllipse(PointD[] cp)
 		{
-			Arc semiCircle = new Arc(cp.toVector2(), radius, -startAngle - endAngle, -startAngle);
+			for(int i = 0; i < cp.Length; i++)
+			{
+				drawEllipse(cp[i]);
+			}
+		}
+		public void drawSemiCircle(PointD cp,double startAngle, double endAngle)
+		{
+			Arc semiCircle = new Arc(cp.toVector2(), cp.R, -startAngle - endAngle, -startAngle);
 			m_dxf.Entities.Add(semiCircle);
 		}
 
@@ -232,16 +249,30 @@ namespace dxf
 
 			return result;
 		}
+		static public PointD[][] moveAry(PointD[][] pa, double dx, double dy)
+		{
+			PointD[][] result = new PointD[pa.Length][];
+			if (pa.Length > 0)
+			{
+				for (int j = 0; j < pa.Length; j++)
+				{
+					result[j] = moveAry(pa[j], dx, dy);
+				}
+			}
+			return result;
+		}
 
-		static public List<PointD[]> clipping(
+		static public PointD[][] clipping(
 			List<PointD[]> subjectPolygons,
 			List<PointD[]> clipPolygons,
 			ClipOperation operation)
 		{
-			return PolygonClipper.Execute(
+			List<PointD[]> result =
+				PolygonClipper.Execute(
 				subjectPolygons,
 				clipPolygons,
 				operation);
+			return result.ToArray();
 		}
 		/// <summary>
 		/// 線分point0,point1,point2の頂点point1での角度を計算する
@@ -348,9 +379,9 @@ namespace dxf
 
 			return jo.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
 		}
-		static public string arrayToAE(PointD[] ary)
+		static public string arrayToAESub(PointD[] ary)
 		{
-			string ret = "({\r\n";
+			string ret = "{\r\n";
 			ret += "closed : true,\r\n";
 
 			string vertices = "";
@@ -377,9 +408,33 @@ namespace dxf
 			ret += inTangents + "\r\n],\r\n";
 			ret += "outTangents : [\r\n";
 			ret += outTangents + "\r\n]\r\n";
-			ret += "})\r\n";
+			ret += "}";
 
 			return ret; 
+		}
+		static public string arrayToAE(PointD[] ary)
+		{
+			string ret = "(";
+			ret = arrayToAESub(ary);
+			ret += ")\r\n";
+			return ret;
+		}
+		static public string arrayToAE(PointD[][] ary)
+		{
+			string ret = "([";
+			if (ary.Length > 0)
+			{
+				for (int j = 0; j < ary.Length; j++)
+				{
+					ret += arrayToAE(ary[j]);
+					if (j < ary.Length - 1)
+					{
+						ret += ",\r\n";
+					}
+				}
+			}
+			ret += "])\r\n";
+			return ret;
 		}
 	}
 }

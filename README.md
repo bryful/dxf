@@ -27,7 +27,7 @@
 
 ```
 dxf/
-├── dxf/                    # コアライブラリとCLIツール
+├── dxf/                   # コアライブラリとCLIツール
 │   ├── DXF.cs             # DXFファイル生成
 │   ├── PointD.cs          # 演算子オーバーロード対応の倍精度2D点
 │   ├── Script.cs          # JavaScript実行エンジン
@@ -45,6 +45,15 @@ dxf/
 - **.NET 10** 以降
 - **Visual Studio 2026** 以降（開発用）
 - **Windows 10/11**（Windows Forms UI用）
+
+## Library Dependencies
+
+- [netDxf](https://github.com/haplokuon/netDxf) - DXF
+- [Clipper2](https://www.angusj.com/clipper2/Docs/Overview.htm) - Clipper2
+- [Jint](https://github.com/sebastienros/jint) - JavaScript interpreter for .NET
+- [NCalc](https://ncalc.github.io/ncalc/articles/index.html) - Mathematical expression evaluator
+- [WindowsAPICodePack-Shell](https://github.com/aybe/Windows-API-Code-Pack-1.1) - Modern Windows dialogs
+
 
 ## 使い方
 
@@ -86,12 +95,36 @@ answerDialog(message, caption)           // Yes/Noダイアログを表示、boo
 inputBox(message, caption2, caption)     // 入力ダイアログを表示、文字列またはnullを返す
 ```
 
+#### クリップボード関数
+```javascript
+copyText(text)        // クリップボードにテキストをコピー
+pasteText()           // クリップボードからテキストを取得、文字列を返す
+```
+
 #### ユーティリティ関数
 ```javascript
 calc(expression)      // 数式を評価、数値を返す
                       // サポート: sin, cos, tan, sqrt, abs, asin, acos, atan,
                       //          log, log10, exp, floor, ceil, round, min, max, pow
 ls(path)              // ディレクトリ内のファイルリストを返す
+
+// 数値変換関数
+numToHex(num, keta)   // 数値を16進数文字列に変換（keta: 桁数、既定値8）
+numToBin(num, keta)   // 数値を2進数文字列に変換（keta: 桁数、既定値16）
+```
+
+**使用例:**
+```javascript
+// クリップボード操作
+copyText("Hello, World!");
+var text = pasteText();
+writeln("クリップボードの内容: " + text);
+
+// 数値変換
+var hex = numToHex(255);        // "000000FF"
+var hex2 = numToHex(255, 4);    // "00FF"
+var bin = numToBin(15);         // "0000000000001111"
+var bin2 = numToBin(15, 8);     // "00001111"
 ```
 
 ### PointD クラス
@@ -121,12 +154,12 @@ var pointF = p1.toPointF();            // PointFに変換
 var str = p1.toString();               // 文字列表現を取得 "(x, y)"
 ```
 
-### DXF クラス
+### Dxf クラス
 
 DXFファイルの作成と操作。
 
 ```javascript
-var dxf = new DXF();
+var dxf = new Dxf();
 
 // 描画メソッド
 dxf.drawLine(x0, y0, x1, y1);          // 2点間の線を描画
@@ -140,24 +173,24 @@ dxf.drawSemiCircle(center, radius, startAngle, endAngle); // 円弧を描画
 dxf.save("output.dxf");
 
 // 静的ジオメトリユーティリティ
-var points = DXF.createRect(x, y, width, height);         // 矩形を作成
-var points = DXF.createRect(center, width, height);       // 中心点から矩形を作成
-var points = DXF.createTriangle(center, sides, radius);   // 正多角形を作成（三角形以上）
+var points = Dxf.createRect(x, y, width, height);         // 矩形を作成
+var points = Dxf.createRect(center, width, height);       // 中心点から矩形を作成
+var points = Dxf.createTriangle(center, sides, radius);   // 正多角形を作成（三角形以上）
 
 // 幾何学的変換
-var rotated = DXF.rotAry(points, center, angleDegrees);   // 回転
-var scaled = DXF.scaleAry(points, center, scaleX, scaleY); // 拡大縮小（%指定）
-var moved = DXF.moveAry(points, dx, dy);                  // 移動
-var mirrored = DXF.mirrorAry(points, lineStart, lineEnd); // ミラーリング
-var mirroredPoint = DXF.mirrorPoint(point, lineStart, lineEnd); // 単一点のミラーリング
+var rotated = Dxf.rotAry(points, center, angleDegrees);   // 回転
+var scaled = Dxf.scaleAry(points, center, scaleX, scaleY); // 拡大縮小（%指定）
+var moved = Dxf.moveAry(points, dx, dy);                  // 移動
+var mirrored = Dxf.mirrorAry(points, lineStart, lineEnd); // ミラーリング
+var mirroredPoint = Dxf.mirrorPoint(point, lineStart, lineEnd); // 単一点のミラーリング
 
 // ポリゴンクリッピング
-var result = DXF.clipping(subjectPolygons, clipPolygons, operation);
+var result = Dxf.clipping(subjectPolygons, clipPolygons, operation);
 // operation: ClipOperation.Union, Intersection, Difference, Xor
 
 // 計算
-var angle = DXF.getAngleAtVertex(point0, point1, point2); // 3点の角度を計算
-var center = DXF.aryCenter(points);                        // 点配列の重心を計算
+var angle = Dxf.getAngleAtVertex(point0, point1, point2); // 3点の角度を計算
+var center = Dxf.aryCenter(points);                        // 点配列の重心を計算
 ```
 
 ### App オブジェクト
@@ -318,10 +351,10 @@ dlg.folderDialog(initialDir, title)
 ### 基本的な矩形
 
 ```javascript
-var dxf = new DXF();
+var dxf = new Dxf();
 
 // 矩形を作成
-var rect = DXF.createRect(0, 0, 100, 50);
+var rect = Dxf.createRect(0, 0, 100, 50);
 dxf.drawPolygon(rect);
 
 // DXFファイルを保存
@@ -332,16 +365,16 @@ writeln("DXFファイルを作成しました: rectangle.dxf");
 ### 回転したポリゴン
 
 ```javascript
-var dxf = new DXF();
+var dxf = new Dxf();
 
 // 六角形を作成
 var center = new PointD(0, 0);
-var hex = DXF.createTriangle(center, 6, 50);
+var hex = Dxf.createTriangle(center, 6, 50);
 
 // オリジナルと回転バージョンを描画
 for (var i = 0; i < 12; i++) {
     var angle = i * 30;
-    var rotated = DXF.rotAry(hex, center, angle);
+    var rotated = Dxf.rotAry(hex, center, angle);
     dxf.drawPolygon(rotated);
 }
 
@@ -358,12 +391,12 @@ dlg.title = "DXFファイルを保存";
 
 var filename = dlg.saveDialog("output.dxf");
 if (filename) {
-    var dxf = new DXF();
-    
+    var dxf = new Dxf();
+
     // ジオメトリを作成
-    var circle = DXF.createTriangle(new PointD(0, 0), 32, 100);
+    var circle = Dxf.createTriangle(new PointD(0, 0), 32, 100);
     dxf.drawPolygon(circle);
-    
+
     // 保存
     if (dxf.save(filename)) {
         writeln("ファイルを保存しました: " + filename);
@@ -376,7 +409,7 @@ if (filename) {
 ### 数学的パターン
 
 ```javascript
-var dxf = new DXF();
+var dxf = new Dxf();
 
 // 螺旋パターンを作成
 var center = new PointD(0, 0);
@@ -387,12 +420,12 @@ var prevPoint;
 for (var i = 0; i < steps; i++) {
     var angle = i * calc("360 / " + steps);
     var radius = (i / steps) * maxRadius;
-    
+
     var point = new PointD(
         calc("cos(" + angle + " * 3.14159 / 180) * " + radius),
         calc("sin(" + angle + " * 3.14159 / 180) * " + radius)
     );
-    
+
     if (i > 0) {
         dxf.drawLine([prevPoint, point]);
     }
@@ -413,11 +446,11 @@ var filename = dlg.openDialog();
 if (filename) {
     var content = FileItem.readAllText(filename, "utf-8");
     var lines = content.split("\n");
-    
+
     writeln("ファイル: " + filename);
     writeln("行数: " + lines.length);
     writeln("─".repeat(50));
-    
+
     for (var i = 0; i < Math.min(10, lines.length); i++) {
         writeln((i + 1) + ": " + lines[i]);
     }
@@ -427,20 +460,20 @@ if (filename) {
 ### ポリゴンクリッピング
 
 ```javascript
-var dxf = new DXF();
+var dxf = new Dxf();
 
 // 2つの矩形を作成
-var rect1 = DXF.createRect(0, 0, 100, 100);
-var rect2 = DXF.createRect(50, 50, 100, 100);
+var rect1 = Dxf.createRect(0, 0, 100, 100);
+var rect2 = Dxf.createRect(50, 50, 100, 100);
 
 // 配列に変換
 var subjects = [rect1];
 var clips = [rect2];
 
 // クリッピング操作
-var union = DXF.clipping(subjects, clips, ClipOperation.Union);
-var intersection = DXF.clipping(subjects, clips, ClipOperation.Intersection);
-var difference = DXF.clipping(subjects, clips, ClipOperation.Difference);
+var union = Dxf.clipping(subjects, clips, ClipOperation.Union);
+var intersection = Dxf.clipping(subjects, clips, ClipOperation.Intersection);
+var difference = Dxf.clipping(subjects, clips, ClipOperation.Difference);
 
 // 結果を描画
 dxf.drawPolygon(union);
@@ -448,40 +481,35 @@ dxf.save("clipping_result.dxf");
 writeln("クリッピング結果を作成しました");
 ```
 
-## ライブラリ依存関係
+### クリップボード操作と数値変換
 
-- **[Jint](https://github.com/sebastienros/jint) 4.4.2** - .NET用JavaScriptインタープリタ
-- **[NCalcSync](https://ncalc.github.io/ncalc/) 5.11.0** - 数式評価ライブラリ
-- **[netDxf](https://github.com/haplokuon/netDxf) 2023.11.10** - DXFファイルフォーマットライブラリ
-- **[Clipper2](https://github.com/AngusJohnson/Clipper2) 2.0.0** - ポリゴンクリッピングとオフセット
-- **[WindowsAPICodePack-Shell](https://github.com/aybe/Windows-API-Code-Pack-1.1) 1.1.1** - モダンなWindowsダイアログ
+```javascript
+// クリップボードからテキストを取得
+var text = pasteText();
+writeln("クリップボードの内容: " + text);
 
-## セキュリティに関する考慮事項
+// 数値を様々な形式に変換
+var num = 255;
+var hex = numToHex(num, 4);     // "00FF"
+var bin = numToBin(num, 8);     // "11111111"
 
-JavaScript実行エンジンには以下の安全制限があります：
+writeln("10進数: " + num);
+writeln("16進数: " + hex);
+writeln("2進数: " + bin);
 
-- **再帰制限:** 100レベル
-- **ステートメント制限:** 10,000ステートメント
-- **CLRアクセス:** 特定のアセンブリに制限
+// 結果をクリップボードにコピー
+var result = "10進数: " + num + "\n16進数: " + hex + "\n2進数: " + bin;
+copyText(result);
+writeln("結果をクリップボードにコピーしました");
 
-これらの制限により、無限ループや過度なリソース消費を防ぎます。
+```
 
 ## ライセンス
 
-本ソフトウェアはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
+このプロジェクトはMITライセンスの下でライセンスされています。詳細については、`LICENSE`ファイルを参照してください。
 
-## 作者
+## Authors
 
-**bryful** (Hiroshi Furuhashi)  
-Twitter: [@bryful](https://twitter.com/bryful)  
-GitHub: [@bryful](https://github.com/bryful)  
-
-## 謝辞
-
-- すべてのオープンソースライブラリ貢献者に感謝します
-- Adobe ExtendScriptの自動化ワークフローにインスパイアされました
-
----
-
-**注意:** 本プロジェクトは活発に開発中です。将来のバージョンでAPIが変更される可能性があります。
+bry-ful(Hiroshi Furuhashi)<br>
+twitter:[bryful](https://twitter.com/bryful)<br>
 

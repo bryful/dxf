@@ -7,15 +7,22 @@ namespace dxf
     {
         public double X { get; set; } = 0;
         public double Y { get; set; } = 0;
+		public double R { get; set; } = 0;
 
-        public PointD(double x, double y)
+		public PointD(double x, double y)
         {
             X = x;
             Y = y;
         }
+		public PointD(double x, double y,double r)
+		{
+			X = x;
+			Y = y;
+            R = r;
+		}
 
-        // 加算演算子のオーバーロード
-        public static PointD operator +(PointD a, PointD b)
+		// 加算演算子のオーバーロード
+		public static PointD operator +(PointD a, PointD b)
         {
             return new PointD(a.X + b.X, a.Y + b.Y);
         }
