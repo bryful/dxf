@@ -8,13 +8,13 @@
 
 ### 主な機能
 
-- 📝 **JavaScriptベースのスクリプト** - 使い慣れたJavaScript構文でDXF生成スクリプトを記述
-- 🎨 **豊富なジオメトリAPI** - 点、線、ポリゴン、楕円などを作成
-- 📐 **幾何学的操作** - 図形の回転、拡大縮小、ミラーリング、変換
-- ✂️ **ポリゴンクリッピング** - ポリゴンの高度なブール演算
-- 📁 **ファイルシステムアクセス** - エンコーディング対応のファイル読み書き
-- 🖥️ **ダイアログサポート** - インタラクティブなファイル選択とユーザー入力
-- 🧮 **数式評価** - 複雑な数式の評価
+-   **JavaScriptベースのスクリプト** - 使い慣れたJavaScript構文でDXF生成スクリプトを記述
+-   **豊富なジオメトリAPI** - 点、線、ポリゴン、楕円などを作成
+-   **幾何学的操作** - 図形の回転、拡大縮小、ミラーリング、変換
+- ?? **ポリゴンクリッピング** - ポリゴンの高度なブール演算
+-   **ファイルシステムアクセス** - エンコーディング対応のファイル読み書き
+-  ? **ダイアログサポート** - インタラクティブなファイル選択とユーザー入力
+-   **数式評価** - 複雑な数式の評価
 
 ## プロジェクト
 
@@ -166,8 +166,9 @@ dxf.drawLine(x0, y0, x1, y1);          // 2点間の線を描画
 dxf.drawLine(pointArray);              // ポリラインを描画
 dxf.drawPolygon(pointArray);           // 閉じたポリゴンを描画
 dxf.drawPolygon(polygonList);          // 複数のポリゴンを描画
-dxf.drawEllipse(center, radius);       // 円/楕円を描画
-dxf.drawSemiCircle(center, radius, startAngle, endAngle); // 円弧を描画
+dxf.drawEllipse(centerPoint);          // 円/楕円を描画（centerPoint.Rが半径）
+dxf.drawEllipse(centerPointArray);     // 複数の円を描画
+dxf.drawSemiCircle(centerPoint, startAngle, endAngle); // 円弧を描画（centerPoint.Rが半径）
 
 // DXFファイルを保存
 dxf.save("output.dxf");
@@ -393,9 +394,14 @@ var filename = dlg.saveDialog("output.dxf");
 if (filename) {
     var dxf = new Dxf();
 
-    // ジオメトリを作成
+    // ジオメトリを作成（正32角形で円を近似）
     var circle = Dxf.createTriangle(new PointD(0, 0), 32, 100);
     dxf.drawPolygon(circle);
+    
+    // または、円を直接描画する場合：
+    // var centerPoint = new PointD(0, 0);
+    // centerPoint.R = 100; // 半径を設定
+    // dxf.drawEllipse(centerPoint);
 
     // 保存
     if (dxf.save(filename)) {
@@ -502,6 +508,35 @@ var result = "10進数: " + num + "\n16進数: " + hex + "\n2進数: " + bin;
 copyText(result);
 writeln("結果をクリップボードにコピーしました");
 
+```
+
+### 円と円弧の描画
+
+```javascript
+var dxf = new Dxf();
+
+// 円を描画（drawEllipseを使用）
+var center1 = new PointD(0, 0);
+center1.R = 50; // 半径を設定
+dxf.drawEllipse(center1);
+
+// 複数の円を一度に描画
+var circles = [];
+for (var i = 0; i < 5; i++) {
+    var cp = new PointD(i * 60, 0);
+    cp.R = 20 + (i * 5);
+    circles.push(cp);
+}
+dxf.drawEllipse(circles);
+
+// 円弧を描画（drawSemiCircleを使用）
+var arcCenter = new PointD(0, 100);
+arcCenter.R = 40; // 半径を設定
+dxf.drawSemiCircle(arcCenter, 0, 90);    // 0度から90度の円弧
+dxf.drawSemiCircle(arcCenter, 90, 180);  // 90度から180度の円弧
+
+dxf.save("circles_and_arcs.dxf");
+writeln("円と円弧を作成しました");
 ```
 
 ## ライセンス
