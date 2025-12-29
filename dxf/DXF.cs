@@ -381,7 +381,7 @@ namespace dxf
 		}
 		static public string arrayToAESub(PointD[] ary)
 		{
-			string ret = "{\r\n";
+			string ret = "({\r\n";
 			ret += "closed : true,\r\n";
 
 			string vertices = "";
@@ -408,20 +408,17 @@ namespace dxf
 			ret += inTangents + "\r\n],\r\n";
 			ret += "outTangents : [\r\n";
 			ret += outTangents + "\r\n]\r\n";
-			ret += "}";
+			ret += "})";
 
 			return ret; 
 		}
 		static public string arrayToAE(PointD[] ary)
 		{
-			string ret = "(";
-			ret = arrayToAESub(ary);
-			ret += ")\r\n";
-			return ret;
+			return arrayToAESub(ary);
 		}
 		static public string arrayToAE(PointD[][] ary)
 		{
-			string ret = "([";
+			string ret = "[";
 			if (ary.Length > 0)
 			{
 				for (int j = 0; j < ary.Length; j++)
@@ -433,8 +430,9 @@ namespace dxf
 					}
 				}
 			}
-			ret += "])\r\n";
+			ret += "]\r\n";
 			return ret;
 		}
+		
 	}
 }
